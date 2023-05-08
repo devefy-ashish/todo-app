@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import "./ToDO.css";
 
 export default function ToDos() {
+  let id_for_update_title = null;
+  let todoIndex = null;
+
   const [isUpdating, setIsUpdating] = useState(false);
 
   const mytodolist = [
@@ -28,14 +31,16 @@ export default function ToDos() {
   function handleSubmitForm(e) {
     e.preventDefault();
     if (!isUpdating) {
-      settodolist((todolist) => [...todolist, { title: e.target.title.value }]);
+      settodolist((todolist) => [
+        ...todolist,
+        { id: Math.round(Math.random() * 100), title: e.target.title.value },
+      ]);
       setTitle("");
     } else {
-      //  const i = e.target.updatelisttiem.value;
-      // settodolist((todolist) => [
-      //   ...todolist,
-      //   (todolist[i] = { title: e.target.title.value }),
-      // ]);
+      // console.log(todoIndex);
+      // todolist[todoIndex].title = title;
+      // settodolist(todolist);
+      console.log("Updating ");
     }
   }
 
@@ -45,15 +50,21 @@ export default function ToDos() {
 
   function handleUpdateButton(e) {
     setIsUpdating(true);
-    const i = e.target.value;
-    const value = todolist[i].title;
+    id_for_update_title = e.target.value;
+    // Here find Index using ID
+    todoIndex = todolist.findIndex((todo) => todo.id == id_for_update_title);
+    const value = todolist[todoIndex].title;
     setTitle(value);
     console.log("Updating ", value);
   }
   function handleDeleteButton(e) {
-    const i = e.target.value;
-    settodolist((current) => current.filter((_, index) => index !== i));
+    // here filter is used to remove element from arraya using id value ,
+    // here remember to use != sign reather than !== for condition comparision
+    const id = e.target.value;
+    settodolist((todolist) => todolist.filter((todo) => todo.id != id));
   }
+
+  function handleOldToUpdateButton() {}
 
   return (
     <div className="todo">
@@ -73,7 +84,12 @@ export default function ToDos() {
             {!isUpdating ? (
               <button className="btn btn-primary">Add</button>
             ) : (
-              <button className="btn btn-warning">Update</button>
+              <button
+                onClick={handleOldToUpdateButton}
+                className="btn btn-warning"
+              >
+                Update
+              </button>
             )}
           </div>
         </div>
@@ -87,7 +103,7 @@ export default function ToDos() {
             </div>
             <div className="col-1 mt-2">
               <button
-                value={index}
+                value={todo.id}
                 className="btn btn-info"
                 onClick={handleUpdateButton}
               >
@@ -96,11 +112,11 @@ export default function ToDos() {
             </div>
             <div className="col-1 mt-2">
               <button
-                value={index}
+                value={todo.id}
                 className="btn btn-danger"
                 onClick={handleDeleteButton}
               >
-                Delete
+                Delete {todo.id}
               </button>
             </div>
           </div>
